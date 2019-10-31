@@ -3,61 +3,61 @@
 
 if [ $1 = "build" ]
 then
-    go build -o $GOPATH/src/hashsnap-event-server/hashsnap-event-server $GOPATH/src/hashsnap-event-server/main.go
+    go build -o $GOPATH/src/go-webapp-starter/go-webapp-starter $GOPATH/src/go-webapp-starter/main.go
     echo "done"
 
 elif [ $1 = "dev" ]
 then
-    gin --port=7000 --appPort=8000 run $GOPATH/src/hashsnap-event-server/main.go
+    gin --port=7000 --appPort=8000 run $GOPATH/src/go-webapp-starter/main.go
     echo "done"
 
 elif [ $1 = "start" ]
 then
-    if [ -f $GOPATH/src/hashsnap-event-server/pids ]; then
+    if [ -f $GOPATH/src/go-webapp-starter/pids ]; then
         echo "./pids file found, you must stop currently running service first."
     else
-        if [ -f $GOPATH/src/hashsnap-event-server/hashsnap-event-server ]
+        if [ -f $GOPATH/src/go-webapp-starter/go-webapp-starter ]
         then
-            nohup $GOPATH/src/hashsnap-event-server/hashsnap-event-server >> $GOPATH/src/hashsnap-event-server/log 2>&1 &
-            echo $! > $GOPATH/src/hashsnap-event-server/pids
-            echo "hashsnap-event-server started"
+            nohup $GOPATH/src/go-webapp-starter/go-webapp-starter >> $GOPATH/src/go-webapp-starter/log 2>&1 &
+            echo $! > $GOPATH/src/go-webapp-starter/pids
+            echo "go-webapp-starter started"
         else
-            echo "File not found $GOPATH/src/hashsnap-event-server/hashsnap-event-server. Did you forget to build? [./run build]"
+            echo "File not found $GOPATH/src/go-webapp-starter/go-webapp-starter. Did you forget to build? [./run build]"
         fi
     fi
 
 
 elif [ $1 = "stop" ]
 then
-    if [ ! -f $GOPATH/src/hashsnap-event-server/pids ]; then
+    if [ ! -f $GOPATH/src/go-webapp-starter/pids ]; then
         echo "./pids file not found."
     else
         while read pid; do
             kill -9 $pid
             echo $pid
-        done < $GOPATH/src/hashsnap-event-server/pids
-        rm $GOPATH/src/hashsnap-event-server/pids
+        done < $GOPATH/src/go-webapp-starter/pids
+        rm $GOPATH/src/go-webapp-starter/pids
     fi
 
 
 elif [ $1 = "tail" ]
 then
-    tail -f $GOPATH/src/hashsnap-event-server/log
+    tail -f $GOPATH/src/go-webapp-starter/log
 
 
 elif [ $1 = "status" ]
 then
-    echo `ps aux | grep hashsnap-event-server | grep -v grep`
+    echo `ps aux | grep go-webapp-starter | grep -v grep`
 
 
 elif [ $1 = "status-pid" ]
 then
-    if [ ! -f $GOPATH/src/hashsnap-event-server/pids ]; then
+    if [ ! -f $GOPATH/src/go-webapp-starter/pids ]; then
         echo "./pids file not found."
     else
         while read pid; do
             echo `ps aux | grep $pid | grep -v grep`
-        done < $GOPATH/src/hashsnap-event-server/pids
+        done < $GOPATH/src/go-webapp-starter/pids
     fi
 
 

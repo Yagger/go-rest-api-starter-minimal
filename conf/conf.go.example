@@ -1,3 +1,10 @@
 package conf
 
 var Port = "8000"
+
+// MySQL
+var MysqlHost = "localhost"
+var MysqlPort = "3306"
+var MysqlDatabase = "gostarter"
+var MysqlUser = "root"
+var MysqlPassword = ""

@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	conf "hashsnap-event-server/conf"
-	context "hashsnap-event-server/context"
-	utils "hashsnap-event-server/utils"
+	conf "go-webapp-starter/conf"
+	context "go-webapp-starter/context"
+	utils "go-webapp-starter/utils"
 
 	"github.com/julienschmidt/httprouter"
 )
