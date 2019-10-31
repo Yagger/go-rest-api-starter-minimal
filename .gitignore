@@ -1,4 +1,4 @@
-hashsnap-event-server
+main
 conf/conf.go
 gin-bin
 log
