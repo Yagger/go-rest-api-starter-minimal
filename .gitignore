@@ -1,0 +1,5 @@
+hashsnap-event-server
+conf/conf.go
+gin-bin
+log
+pids

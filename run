@@ -1,0 +1,66 @@
+#!/bin/bash
+
+
+if [ $1 = "build" ]
+then
+    go build -o $GOPATH/src/hashsnap-event-server/hashsnap-event-server $GOPATH/src/hashsnap-event-server/main.go
+    echo "done"
+
+elif [ $1 = "dev" ]
+then
+    gin --port=7000 --appPort=8000 run $GOPATH/src/hashsnap-event-server/main.go
+    echo "done"
+
+elif [ $1 = "start" ]
+then
+    if [ -f $GOPATH/src/hashsnap-event-server/pids ]; then
+        echo "./pids file found, you must stop currently running service first."
+    else
+        if [ -f $GOPATH/src/hashsnap-event-server/hashsnap-event-server ]
+        then
+            nohup $GOPATH/src/hashsnap-event-server/hashsnap-event-server >> $GOPATH/src/hashsnap-event-server/log 2>&1 &
+            echo $! > $GOPATH/src/hashsnap-event-server/pids
+            echo "hashsnap-event-server started"
+        else
+            echo "File not found $GOPATH/src/hashsnap-event-server/hashsnap-event-server. Did you forget to build? [./run build]"
+        fi
+    fi
+
+
+elif [ $1 = "stop" ]
+then
+    if [ ! -f $GOPATH/src/hashsnap-event-server/pids ]; then
+        echo "./pids file not found."
+    else
+        while read pid; do
+            kill -9 $pid
+            echo $pid
+        done < $GOPATH/src/hashsnap-event-server/pids
+        rm $GOPATH/src/hashsnap-event-server/pids
+    fi
+
+
+elif [ $1 = "tail" ]
+then
+    tail -f $GOPATH/src/hashsnap-event-server/log
+
+
+elif [ $1 = "status" ]
+then
+    echo `ps aux | grep hashsnap-event-server | grep -v grep`
+
+
+elif [ $1 = "status-pid" ]
+then
+    if [ ! -f $GOPATH/src/hashsnap-event-server/pids ]; then
+        echo "./pids file not found."
+    else
+        while read pid; do
+            echo `ps aux | grep $pid | grep -v grep`
+        done < $GOPATH/src/hashsnap-event-server/pids
+    fi
+
+
+else
+    echo "Expected commands are [build, start, stop, tail, status, status-pid]"
+fi
