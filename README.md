@@ -1,1 +1,3 @@
 # go-webapp-starter
+
+A Golang web application starter. No libs except for `httprouter`, just a few wrappers, like context for passing HTTP and DB clients down to route handlers, panic handling, access logging and CORS setting. Plus a starter for config file and a bash runner script which provides shortcuts to build, start and stop for simple daemon run on the server, and development with `gin` which provides live updates.
