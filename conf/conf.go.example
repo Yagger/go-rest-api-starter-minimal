@@ -1,6 +1,14 @@
 package conf
 
+var Debug = true
+
 var Port = "8000"
+
+// Session
+var SessionCookie = "my_sessid"
+var SessionDomain = ".mydomain.net"
+var SessionTTL = 3600 * 24 * 30
+var SessionSecret = "FIXME"
 
 // MySQL
 var MysqlHost = "localhost"

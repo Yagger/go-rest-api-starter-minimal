@@ -2,50 +2,63 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"runtime/debug"
 
-	conf "go-webapp-starter/conf"
-	context "go-webapp-starter/context"
-	utils "go-webapp-starter/utils"
+	Conf "go-webapp-starter/conf"
+	HandlerContext "go-webapp-starter/context"
+
+	Handlers "go-webapp-starter/handlers"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 var (
-	ctx *context.Context
+	hctx *HandlerContext.Context
 )
 
-func makeHandler(fn func(http.ResponseWriter, *http.Request, httprouter.Params, *context.Context)) httprouter.Handle {
+func makeHandler(fn func(http.ResponseWriter, *http.Request, httprouter.Params, *HandlerContext.Context)) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		defer func() {
 			if r := recover(); r != nil {
-				log.Printf("%s: %s", r, debug.Stack())
 				if r == 401 {
 					w.WriteHeader(http.StatusUnauthorized)
 				} else if r == 404 {
 					w.WriteHeader(http.StatusNotFound)
 				} else {
+					log.Printf("%s: %s", r, debug.Stack())
 					w.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprintf(w, fmt.Sprint(r))
+					if Conf.Debug {
+						fmt.Fprintf(w, fmt.Sprint(r))
+					} else {
+						fmt.Fprintf(w, "Unexpecter error happened")
+					}
 					fmt.Println(r)
 				}
 			}
 		}()
-		fn(w, r, ps, ctx)
+		fn(w, r, ps, hctx)
 	}
 }
 
 func main() {
-	ctx = &context.Context{}
-	ctx.Init()
+	hctx = &HandlerContext.Context{}
+	hctx.Init()
 
 	var router = httprouter.New()
-	router.GET("/version", makeHandler(versionHandler))
-	log.Printf("Listening on %s", conf.Port)
-	log.Fatal(http.ListenAndServe(":"+conf.Port, &Server{router}))
+
+	router.GET("/version", makeHandler(Handlers.VersionHandler))
+	router.POST("/login", makeHandler(Handlers.LoginHandler))
+	router.GET("/logout", makeHandler(Handlers.LogoutHandler))
+	router.GET("/whoami", makeHandler(Handlers.WhoamiHandler))
+	router.GET("/accounts", makeHandler(Handlers.ListAccountHandler))
+	router.PUT("/account", makeHandler(Handlers.CreateAccountHandler))
+	// router.GET("/account/:account_id", makeHandler(HandlersReadAccountHandler))
+	// router.POST("/account/:account_id", makeHandler(Handlers.UpdateAccountHandler))
+
+	log.Printf("Listening on %s", Conf.Port)
+	log.Fatal(http.ListenAndServe(":"+Conf.Port, &Server{router}))
 }
 
 // Server struct
@@ -63,10 +76,4 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Max-Age", "3600")
 	}
 	s.r.ServeHTTP(w, r)
-}
-
-func versionHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx *context.Context) {
-	data, err := ioutil.ReadFile("version")
-	utils.CheckErr(err, "versionHandler", "Unable to read version file")
-	fmt.Fprintf(w, "Version: %s", data)
 }

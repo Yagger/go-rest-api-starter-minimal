@@ -45,7 +45,7 @@ type DB struct {
 
 // Connect Mysql connect method
 func (db *DB) Connect() {
-	uri := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci&autocommit=true&parseTime=true",
+	uri := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci&autocommit=true&parseTime=true&loc=utc",
 		conf.MysqlUser, conf.MysqlPassword, conf.MysqlHost, conf.MysqlPort, conf.MysqlDatabase)
 	client, err := sqlx.Connect("mysql", uri)
 	if err != nil {
